@@ -1,0 +1,2 @@
+: foreach src/*.c |> clang -g -Wall -Wextra -Werror -c %f -o %o |> %B.o
+: *.o |> clang %f -o %o |> snap
