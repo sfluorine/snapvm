@@ -1,49 +1,34 @@
 #pragma once
 
-#include <stdint.h>
-#include <stddef.h>
+#include "value.h"
 
-#include "object.h"
-
-#define STACK_CAP 2097152
-#define OBJECTS_CAP 1024
-#define STACK_ELEM_SIZE 8
-
-typedef struct {
-    object_t* ptr;
-    size_t sp;
-} object_ptr_t;
+#define STACK_CAPACITY 262144
+#define OBJECTS_CAPACITY 2048
 
 typedef enum {
     INS_HALT,
-    INS_NEW_OBJ,
-    INS_STRING_CONCAT,
-    INS_PRINT,
-    INS_DUP,
     INS_SCOPE_ENTER,
     INS_SCOPE_LEAVE,
+    INS_LOAD_OBJECT,
 } snap_instruction_t;
 
 typedef struct {
     uint8_t* program;
-    size_t pc; // program counter.
+    int64_t pc; // program counter.
 
-    uint8_t stack[STACK_CAP];
-    size_t sp; // stack pointer.
-    size_t bp; // base pointer.
+    value_t stack[STACK_CAPACITY];
+    int64_t sp; // stack pointer.
+    int64_t bp; // base pointer.
 
-    object_t objects[OBJECTS_CAP];
-    size_t oc; // objects counter.
+    object_t* objects[OBJECTS_CAPACITY];
+    int64_t oc; // object counter.
 
-    object_ptr_t objects_ptrs[OBJECTS_CAP];
-    size_t opc; // objects pointers counter.
+    bool halt;
+} snap_vm_t;
 
-    int halt;
-} svm_t;
+snap_vm_t* snap_create();
+void snap_free(snap_vm_t*);
+void snap_load_program(snap_vm_t*, uint8_t*);
+void snap_execute(snap_vm_t*);
 
-svm_t* svm_new();
-void svm_free(svm_t*);
-void svm_load_program(svm_t* , uint8_t*);
-void svm_launch(svm_t*);
-
-size_t svm_put_object(svm_t*, object_t);
+int64_t snap_put_object(snap_vm_t*, object_t*);

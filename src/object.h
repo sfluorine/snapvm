@@ -15,6 +15,7 @@ typedef struct {
 } object_t;
 
 object_t object_make_header(object_type_t);
+void object_free(object_t*);
 
 typedef struct {
     object_t header;
@@ -23,4 +24,3 @@ typedef struct {
 } snap_string_t;
 
 object_t* object_make_string(const char*, size_t);
-void object_free_string(snap_string_t*);
